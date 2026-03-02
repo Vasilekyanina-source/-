@@ -2,32 +2,329 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Тест компонента</title>
-    <!-- Подключаем скрипт компонента -->
-    <script defer src="https://cdn.jsdelivr.net/npm/python-code-exercise-element@0.1.6/dist/code-exercise.umd.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Урок с автоматической проверкой кода</title>
+    <!-- Подключение Pyodide (интерпретатор Python в браузере) -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"></script>
     <style>
-        /* Простые стили, чтобы компонент выглядел аккуратно */
-        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
-        code-exercise-element { display: block; margin: 20px 0; border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
+        /* Основные стили страницы */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fafafa;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .task {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+        .task pre {
+            background: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border: 1px solid #ccc;
+        }
+        .editor-container {
+            margin: 20px 0;
+        }
+        textarea {
+            width: 100%;
+            min-height: 250px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            padding: 15px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            background: #fff;
+            resize: vertical;
+            box-sizing: border-box;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52,152,219,0.5);
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button.reset {
+            background: #e74c3c;
+        }
+        button.reset:hover {
+            background: #c0392b;
+        }
+        .output {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            min-height: 100px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .output.success {
+            background: #27ae60;
+        }
+        .output.error {
+            background: #c0392b;
+        }
+        .status {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin: 10px 0;
+        }
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #95a5a6;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <h1>Проверка задания</h1>
-    <code-exercise-element name="test_square">
-        <span slot="prompt">
-            <strong>Задание:</strong> Напишите функцию <code>square(x)</code>, возвращающую квадрат числа.
-        </span>
+    <h1>🧪 Задание по программированию (Python)</h1>
+    
+    <div class="task">
+        <h3>📌 Условие задачи</h3>
+        <p>Напишите функцию <code>square(x)</code>, которая принимает одно число и возвращает его квадрат.</p>
+        <p><strong>Примеры:</strong></p>
+        <pre>
+square(3) → 9
+square(-2) → 4
+square(0) → 0
+        </pre>
+        <p><em>Вставьте ваш код в поле ниже. Функция должна называться точно <code>square</code> и принимать один аргумент.</em></p>
+    </div>
+
+    <!-- Редактор кода (textarea) -->
+    <div class="editor-container">
+        <textarea id="code" placeholder="Введите ваш код на Python...">
 def square(x):
     """
-    >>> square(3)
-    9
-    >>> square(-2)
-    4
-    >>> square(0)
-    0
+    Функция возвращает квадрат числа.
     """
     # YOUR CODE HERE
-    pass
-    </code-exercise-element>
+    return x * x  # правильное решение
+        </textarea>
+    </div>
+
+    <!-- Кнопки управления -->
+    <div>
+        <button id="runBtn">▶ Проверить задание</button>
+        <button id="resetBtn" class="reset">↺ Сбросить код</button>
+    </div>
+
+    <!-- Статус загрузки Pyodide -->
+    <div id="status" class="status">⏳ Загрузка Python... (это займёт несколько секунд)</div>
+
+    <!-- Блок вывода результатов -->
+    <div id="output" class="output">—</div>
+
+    <div class="footer">
+        * Код выполняется полностью в вашем браузере, ничего не отправляется на сервер.
+    </div>
+
+    <script>
+        // Глобальные переменные
+        let pyodide = null;
+        const outputDiv = document.getElementById('output');
+        const statusDiv = document.getElementById('status');
+        const codeTextarea = document.getElementById('code');
+        const runBtn = document.getElementById('runBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Инициализация Pyodide при загрузке страницы
+        async function initPyodide() {
+            try {
+                statusDiv.innerHTML = '⏳ Загрузка Python... (может занять 2-5 секунд)';
+                pyodide = await loadPyodide({
+                    indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.28.2/full/',
+                });
+                statusDiv.innerHTML = '✅ Python загружен. Можно выполнять код.';
+                // Делаем кнопку активной
+                runBtn.disabled = false;
+            } catch (error) {
+                statusDiv.innerHTML = '❌ Ошибка загрузки Python: ' + error.message;
+                runBtn.disabled = true;
+            }
+        }
+
+        // Запускаем инициализацию
+        initPyodide();
+
+        // Функция для безопасного выполнения кода и тестов
+        async function runTests() {
+            if (!pyodide) {
+                outputDiv.className = 'output error';
+                outputDiv.textContent = '❌ Python ещё не загружен. Подождите.';
+                return;
+            }
+
+            const userCode = codeTextarea.value;
+
+            // Очищаем вывод
+            outputDiv.className = 'output';
+            outputDiv.innerHTML = '⏳ Проверка...';
+
+            try {
+                // Перехватываем stdout/stderr для вывода
+                pyodide.runPython(`
+import sys
+from io import StringIO
+sys.stdout = StringIO()
+sys.stderr = StringIO()
+                `);
+
+                // Попытка выполнить код пользователя
+                try {
+                    pyodide.runPython(userCode);
+                } catch (e) {
+                    // Если код пользователя не компилируется, показываем ошибку
+                    const err = pyodide.runPython('sys.stderr.getvalue()');
+                    outputDiv.className = 'output error';
+                    outputDiv.innerHTML = '❌ Ошибка в вашем коде:<br>' + (e.message || e).replace(/\n/g, '<br>');
+                    if (err) outputDiv.innerHTML += '<br>' + err.replace(/\n/g, '<br>');
+                    return;
+                }
+
+                // Проверяем, определена ли функция square
+                let hasSquare;
+                try {
+                    hasSquare = pyodide.runPython('"square" in dir()');
+                } catch (e) {
+                    hasSquare = false;
+                }
+
+                if (!hasSquare) {
+                    outputDiv.className = 'output error';
+                    outputDiv.innerHTML = '❌ Функция <code>square</code> не найдена. Убедитесь, что вы определили функцию с таким именем.';
+                    return;
+                }
+
+                // Тестовые данные: входные значения и ожидаемые результаты
+                const tests = [
+                    { input: 3, expected: 9 },
+                    { input: -2, expected: 4 },
+                    { input: 0, expected: 0 },
+                    { input: 5, expected: 25 },
+                    { input: -5, expected: 25 }
+                ];
+
+                let allPassed = true;
+                let outputLines = [];
+
+                for (let t of tests) {
+                    let result;
+                    try {
+                        // Вызываем функцию пользователя через Pyodide
+                        result = pyodide.globals.get('square')(t.input);
+                        // Преобразуем результат в число (на случай, если вернулось что-то типа int)
+                        if (typeof result === 'object' && result !== null && 'toJs' in result) {
+                            result = result.toJs();
+                        }
+                    } catch (e) {
+                        result = 'ошибка: ' + e.message;
+                    }
+
+                    const passed = (result === t.expected);
+                    if (!passed) allPassed = false;
+                    
+                    const icon = passed ? '✅' : '❌';
+                    outputLines.push(`${icon} square(${t.input}) = ${result} | ожидалось ${t.expected}`);
+                }
+
+                // Получаем stdout от кода пользователя (если он что-то печатал)
+                const stdout = pyodide.runPython('sys.stdout.getvalue()');
+                const stderr = pyodide.runPython('sys.stderr.getvalue()');
+
+                // Формируем итоговый вывод
+                let finalOutput = '';
+                if (stdout) {
+                    finalOutput += '📤 Вывод вашего кода:\n' + stdout + '\n';
+                }
+                if (stderr) {
+                    finalOutput += '⚠️ Сообщения об ошибках (stderr):\n' + stderr + '\n';
+                }
+                finalOutput += '📊 Результаты тестов:\n' + outputLines.join('\n');
+
+                if (allPassed) {
+                    outputDiv.className = 'output success';
+                    finalOutput = '✅ Все тесты пройдены!\n\n' + finalOutput;
+                } else {
+                    outputDiv.className = 'output error';
+                    finalOutput = '❌ Некоторые тесты не пройдены.\n\n' + finalOutput;
+                }
+
+                outputDiv.innerHTML = finalOutput.replace(/\n/g, '<br>');
+
+            } catch (error) {
+                outputDiv.className = 'output error';
+                outputDiv.innerHTML = '❌ Внутренняя ошибка: ' + error.message.replace(/\n/g, '<br>');
+            }
+        }
+
+        // Функция сброса кода к начальному состоянию
+        function resetCode() {
+            codeTextarea.value = `def square(x):
+    """
+    Функция возвращает квадрат числа.
+    """
+    # YOUR CODE HERE
+    return x * x  # правильное решение`;
+            outputDiv.className = 'output';
+            outputDiv.innerHTML = '—';
+        }
+
+        // Назначаем обработчики на кнопки
+        runBtn.addEventListener('click', runTests);
+        resetBtn.addEventListener('click', resetCode);
+
+        // Дополнительно: блокируем кнопку выполнения, пока Pyodide не загрузится
+        runBtn.disabled = true;
+    </script>
 </body>
 </html>
