@@ -1,0 +1,75 @@
+html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Урок по программированию на Python</title>
+    
+    <!-- 1. Подключаем сам компонент из CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/python-code-exercise-element@0.1.6/dist/code-exercise.umd.js"></script>
+    
+    <!-- 2. Немного стилей для красивого отображения (по желанию) -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        code-exercise-element {
+            display: block;
+            margin: 30px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        code-exercise-element .cm-editor {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Урок 3: Функции в Python</h1>
+<p>В этом уроке мы научимся писать функции. Попробуйте решить задачу ниже.</p>
+
+<!-- 3. ВСТАВЛЯЕМ КОМПОНЕНТ С ЗАДАНИЕМ -->
+<code-exercise-element name="lesson3_square">
+    <!-- Текст задания (отображается над редактором) -->
+    <span slot="prompt">
+        <strong>Задание:</strong> Напишите функцию <code>square(x)</code>, которая возвращает квадрат числа.
+    </span>
+
+    <!-- Начальный код в редакторе (ученик может его менять) -->
+    def square(x):
+        """
+        >>> square(3)
+        9
+        >>> square(-2)
+        4
+        >>> square(0)
+        0
+        """
+        # YOUR CODE HERE
+        pass
+</code-exercise-element>
+
+<!-- Кнопка запуска тестов уже есть внутри компонента, но можно добавить пояснение -->
+<p>Нажмите кнопку <strong>Run Tests</strong> внутри редактора, чтобы проверить своё решение.</p>
+
+</body>
+</html>
